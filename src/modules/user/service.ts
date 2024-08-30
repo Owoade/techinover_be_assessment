@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException,
 import { UserRepository } from "./repo";
 import { AuthenticationUtils } from "@modules/core/auth/urtls";
 import { UserModelInterface } from "./type";
+import * as crypto from "crypto";
 
 @Injectable()
 export class UserService {
@@ -33,7 +34,8 @@ export class UserService {
         delete new_user.password;
 
         const token = this.auth_utils.sign_token({
-            id: new_user.id
+            id: new_user.id,
+            session_id: crypto.randomUUID()
         })
 
         return {

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { ProductRepository } from "./repo";
-import { ProductModelInterface } from "./type";
+import { FilterProduct, ProductModelInterface } from "./type";
 import slugify from "slugify";
 import * as crypto from "crypto";
 
@@ -11,7 +11,7 @@ export class ProductService {
         private product_repo: ProductRepository
     ){}
 
-    async create_product( _payload: Pick<ProductModelInterface, 'UserId' | 'price' | 'UserId' | 'name'> ){
+    async create_product( _payload: Pick<ProductModelInterface, 'UserId' | 'price' | 'name'> ){
 
         const payload = { ..._payload } as ProductModelInterface;
 
@@ -37,7 +37,7 @@ export class ProductService {
 
     }
 
-    async approve_product( product_id: ProductModelInterface['id'], review: ProductModelInterface['is_approved'] ){
+    async review_product( product_id: ProductModelInterface['id'], review: ProductModelInterface['is_approved'] ){
 
         const existing_product = await this.product_repo.get_one_product({ id: product_id }, ['id']);
 
@@ -47,6 +47,36 @@ export class ProductService {
 
         return updated_product;
         
+    }
+
+    async update_product( payload: Partial<ProductModelInterface>, filter: FilterProduct ){
+
+        const existing_product = await this.product_repo.get_one_product(filter, ['id']);
+
+        if( !existing_product ) throw new NotFoundException('Product not found');
+        
+        if( payload.name ){
+
+            let slug = slugify(payload.name.replace(/\b[Ee]lections?\b/g, ""), {
+                strict: true,
+                lower: true,
+                replacement: '-',
+                trim: true
+            })
+
+            payload.slug = slug;
+
+            const existing_product = await this.product_repo.get_one_product({ slug }, ['id']);
+
+            if( existing_product )
+                payload.slug += crypto.randomInt(10,20);
+
+        }
+
+        const updated_product = await this.product_repo.update_product(payload, filter);
+
+        return updated_product;
+
     }
 
 }

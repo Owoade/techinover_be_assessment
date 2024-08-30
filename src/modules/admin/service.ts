@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/co
 import { AdminModelInterface } from "./type";
 import { AdminRepository } from "./repo";
 import { AuthenticationUtils } from "@modules/core/auth/urtls";
+import * as crypto from "crypto";
 
 @Injectable()
 export class AdminService {
@@ -21,7 +22,10 @@ export class AdminService {
 
         if( PASSWORD_IS_INVALID ) throw new UnauthorizedException('Password is Invalid');
 
-        const token = this.auth_utils.sign_token({ id: existing_admin.id });
+        const token = this.auth_utils.sign_token({ 
+            id: existing_admin.id,
+            session_id: crypto.randomUUID()
+        });
 
         return token;
         
