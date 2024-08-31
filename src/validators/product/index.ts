@@ -10,7 +10,7 @@ export const create_product_validator = Joi.object({
 
 export const update_product_validator = Joi.object({
 
-    id: Joi.number().integer(),
+    id: Joi.number().integer().required(),
     
     price: Joi.number(),
 

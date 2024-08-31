@@ -3,6 +3,7 @@ import { UserRepository } from "./repo";
 import { AuthenticationUtils } from "@modules/core/auth/urtls";
 import { UserModelInterface } from "./type";
 import * as crypto from "crypto";
+import { redis_client } from "@cache/index";
 
 @Injectable()
 export class UserService {
@@ -31,11 +32,15 @@ export class UserService {
 
         const new_user = await this.user_repo.create_user( payload );
 
+        const session_id = crypto.randomUUID();
+
+        await redis_client.setex(`USER-SESSTION-${session_id}`, 7200, new_user.id)
+
         delete new_user.password;
 
         const token = this.auth_utils.sign_token({
             id: new_user.id,
-            session_id: crypto.randomUUID()
+            session_id
         })
 
         return {
@@ -61,7 +66,11 @@ export class UserService {
 
         delete existing_user.password;
 
-        const token = this.auth_utils.sign_token({ id: existing_user.id });
+        const session_id = crypto.randomUUID();
+
+        await redis_client.setex(`USER-SESSTION-${session_id}`, 7200, existing_user.id)
+
+        const token = this.auth_utils.sign_token({ id: existing_user.id, session_id });
 
         return {
             user: existing_user,
@@ -76,7 +85,13 @@ export class UserService {
 
         if(!existing_user) throw new NotFoundException('User not found');
 
-        const updated_user = await this.user_repo.update_user({ is_banned: !existing_user.is_banned }, { id: user_id });
+        const [ updated_user ] = await Promise.all([
+
+            this.user_repo.update_user({ is_banned: !existing_user.is_banned }, { id: user_id }),
+
+            redis_client.del(`USER-${user_id}`)
+
+        ]) 
 
         delete updated_user.password;
 

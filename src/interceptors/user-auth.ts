@@ -39,13 +39,13 @@ export class UserAuthInterceptor implements NestInterceptor {
 
         if( !payload ) throw new BadRequestException("Invalid token");
 
-        if( payload.session_id ) throw new BadRequestException('Invalid session');
+        if( !payload.session_id ) throw new BadRequestException('Invalid session');
 
         const [ cached_user, cached_session ] = await Promise.all([
 
             redis_client.get(`USER-${payload.id}`),
 
-            redis_client.get(`USER-SESSTION-${payload.session_id}`)
+            redis_client.get(`USER-SESSION-${payload.session_id}`)
 
         ])
 
@@ -58,6 +58,8 @@ export class UserAuthInterceptor implements NestInterceptor {
         else user = await this.user_repo.get_one_user( { id: payload.id } );
 
         if(!user) throw new ForbiddenException("This operation is beyond the scope of your privilege");
+
+        if( user.is_banned ) throw new ForbiddenException('Sorry, your account has been disabled');
 
         await redis_client.set(`USER-${payload.id}`, JSON.stringify(user))
 

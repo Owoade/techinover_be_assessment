@@ -3,6 +3,11 @@
 const { PRODUCT_TABLE_NAME } = require("../../../dist/db/schema/product");
 const { USER_TABLE_NAME } = require("../../../dist/db/schema/user");
 
+console.log({
+  PRODUCT_TABLE_NAME,
+  USER_TABLE_NAME
+})
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {

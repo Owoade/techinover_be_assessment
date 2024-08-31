@@ -36,17 +36,17 @@ export class AdminAuthInterceptor implements NestInterceptor {
 
         const [ type, token ] = auth_header.split(' ');
 
-        const payload = await this.auth_utils.verify_token( token ) as any;
+        const payload = this.auth_utils.verify_token( token ) as any;
 
         if( !payload ) throw new BadRequestException("Invalid token");
 
-        if( payload.session_id ) throw new BadRequestException('Invalid session');
+        if( !payload.session_id ) throw new BadRequestException('Invalid session');
 
         const [ cached_admin, cached_session ] = await Promise.all([
 
             redis_client.get(`ADMIN-${payload.id}`),
 
-            redis_client.get(`ADMIN-SESSTION-${payload.session_id}`)
+            redis_client.get(`ADMIN-SESSION-${payload.session_id}`)
 
         ])
 

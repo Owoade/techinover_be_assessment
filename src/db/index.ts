@@ -1,5 +1,5 @@
 import { Sequelize, SyncOptions } from "sequelize";
-import { DATABASE_HOST, DATABASE_NAME, DATABASE_PASSWORD, DATABASE_PORT, DATABASE_USER, NODE_ENV } from "@env/index";
+import { DATABASE_HOST, DATABASE_NAME, DATABASE_PASSWORD, DATABASE_PORT, DATABASE_SSL_MODE, DATABASE_USER, NODE_ENV } from "@env/index";
 
 const db = new Sequelize(
  {
@@ -11,7 +11,7 @@ const db = new Sequelize(
   dialect: "postgres",
   dialectOptions: {
     ...(
-      NODE_ENV !== "production" ? {
+      DATABASE_SSL_MODE === "on" ? {
         ssl: {
           require: true,
           rejectUnauthorized: false

@@ -1,14 +1,15 @@
-import { Controller, Delete, Get, Post, UseInterceptors } from "@nestjs/common";
+import { Controller, Delete, Get, Patch, Post, UseInterceptors } from "@nestjs/common";
 import { UserService } from "./service";
 import { RequestPayload, User } from "@decorators/index";
-import { sign_in_validator } from "@validators/user";
+import { sign_in_validator, user_sign_up_validator } from "@validators/user";
 import { UserAuthInterceptor } from "src/interceptors/user-auth";
 import { response } from "@utils/response";
-import { create_product_validator } from "@validators/product";
+import { create_product_validator, update_product_validator } from "@validators/product";
 import { ProductService } from "@modules/product/service";
 import { UserModelInterface } from "./type";
 import { id_validator, pagination_validator } from "@validators/utils";
 import { ProductRepository } from "@modules/product/repo";
+import { ProductModelInterface } from "@modules/product/type";
 
 @Controller('user')
 @UseInterceptors(UserAuthInterceptor)
@@ -24,7 +25,7 @@ export class UserController {
     async sign_up(
 
         @RequestPayload({
-            validator: sign_in_validator
+            validator: user_sign_up_validator
         })
         payload: Parameters<typeof this.service.sign_up>[0]
 
@@ -53,11 +54,12 @@ export class UserController {
 
     ){
 
-        const { token } = await this.service.sign_in( payload );
+        const { token, user } = await this.service.sign_in( payload );
 
         return response({
             status: true,
             data: {
+                user,
                 token
             },
             statusCode: 200
@@ -95,7 +97,8 @@ export class UserController {
     async get_products(
 
         @RequestPayload({
-            validator: pagination_validator
+            validator: pagination_validator,
+            type: "query"
         })
         payload: { page: string | number, per_page: string | number },
 
@@ -108,7 +111,7 @@ export class UserController {
 
         payload.per_page = parseInt(payload.per_page as string) as number;
 
-        const products = await this.product_repository.get_products({
+        const {products, count} = await this.product_repository.get_products({
             UserId: user.id
         }, payload.page, payload.per_page );
 
@@ -116,10 +119,43 @@ export class UserController {
             status: true,
             statusCode: 200,
             data: {
+                count,
                 products
             }
         })
 
+    }
+
+    @Patch('/product')
+    async update_product(
+
+        @RequestPayload({
+            validator: update_product_validator
+        })
+        payload: Partial<ProductModelInterface> & { id: number },
+
+        @User()
+        user: UserModelInterface
+
+    ){
+
+        const filter = {
+            id: payload.id,
+            UserId: user.id
+        }
+
+        delete payload.id;
+
+        const updated_product = await this.product_service.update_product( payload, filter);
+
+        return response({
+            status: true,
+            statusCode: 200,
+            data: {
+                updated_product
+            }
+        })
+    
     }
 
     @Delete('/product')
@@ -129,18 +165,22 @@ export class UserController {
             validator: id_validator('product_id'),
             type: "query"
         })
-        payload: { product_id: string }
+        payload: { product_id: string },
+
+        @User()
+        user: UserModelInterface
 
     ){
 
-        await this.product_repository.delete_product({id: parseInt(payload.product_id) })
+        await this.product_repository.delete_product({ id: parseInt(payload.product_id), UserId: user.id })
 
         return response({
             status: true,
+            message: "Product deletion initiated",
             statusCode: 200,
             data: {}
         })
-        
+
     }
 
 

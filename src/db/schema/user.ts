@@ -1,6 +1,6 @@
 import schema_type from "@utils/schema";
 
-const UserSchema = {
+export const UserSchema = {
 
     id: schema_type.primary_key(),
 
@@ -19,6 +19,4 @@ const UserSchema = {
 }
 
 export const USER_TABLE_NAME = "Users";
-
-export default UserSchema;
 

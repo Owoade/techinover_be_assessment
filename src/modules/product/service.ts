@@ -27,7 +27,7 @@ export class ProductService {
         const existing_product = await this.product_repo.get_one_product({ slug }, ['id']);
 
         if( existing_product )
-            payload.slug += crypto.randomInt(10,20)
+            payload.slug += `-${crypto.randomInt(10,20)}`;
 
         payload.is_approved = false;
 
@@ -68,8 +68,13 @@ export class ProductService {
 
             const existing_product = await this.product_repo.get_one_product({ slug }, ['id']);
 
-            if( existing_product )
-                payload.slug += crypto.randomInt(10,20);
+            console.log({
+                existing_product,
+                filter_id: filter.id
+            })
+
+            if( existing_product && filter.id !== existing_product.id )
+                payload.slug += `-${crypto.randomInt(10,20)}`;
 
         }
 

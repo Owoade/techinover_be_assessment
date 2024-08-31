@@ -11,3 +11,5 @@ export interface UserModelInterface {
     is_banned: boolean;
 
 }
+
+export type FilterUser = Partial<Pick<UserModelInterface, "email" | "id">>;

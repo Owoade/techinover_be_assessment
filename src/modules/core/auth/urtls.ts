@@ -8,7 +8,7 @@ export class AuthenticationUtils {
 
     constructor(){}
 
-    async sign_token( payload: any ){
+    sign_token( payload: any ){
 
         const token = jwt.sign(payload, JWT_TOKEN_PASSPHARSE )
 
@@ -16,7 +16,7 @@ export class AuthenticationUtils {
 
     }
 
-    async verify_token( token: string ){
+    verify_token( token: string ){
 
         try{
 

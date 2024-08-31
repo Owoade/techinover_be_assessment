@@ -1,5 +1,5 @@
 import db from "@db/index";
-import UserSchema, { USER_TABLE_NAME } from "@db/schema/user";
+import { USER_TABLE_NAME, UserSchema } from "@db/schema/user";
 
 export const UserModel = db.define(USER_TABLE_NAME, UserSchema, { timestamps: true });
 

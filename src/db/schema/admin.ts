@@ -1,6 +1,6 @@
 import schema_type from "@utils/schema";
 
-const AdminSchema = {
+export const AdminSchema = {
 
     id: schema_type.primary_key(),
 
@@ -18,4 +18,4 @@ const AdminSchema = {
 
 export const ADMIN_TABLE_NAME = "Admins";
 
-export default AdminSchema;
+

@@ -36,6 +36,8 @@ export class UserRepository {
 
     async get_users( filter: FilterUser, page: number, per_page: number ){
 
+        const count = await this.UserModel.count({ where: filter });
+
         const users = await this.UserModel.findAll({
             where: filter,
             limit: per_page,
@@ -45,7 +47,10 @@ export class UserRepository {
             offset: per_page * (page - 1 )
         })
 
-        return users.map( user => user.toJSON() );
+        return {
+            count,
+            users: users.map( user => user.toJSON() )
+        };
 
     }
 

@@ -3,6 +3,7 @@ import { AdminModelInterface } from "./type";
 import { AdminRepository } from "./repo";
 import { AuthenticationUtils } from "@modules/core/auth/urtls";
 import * as crypto from "crypto";
+import { redis_client } from "@cache/index";
 
 @Injectable()
 export class AdminService {
@@ -14,6 +15,8 @@ export class AdminService {
 
     async sigin_in( payload: Pick<AdminModelInterface, 'email' | 'password'> ){
 
+        payload.email = payload.email.toLowerCase();
+
         const existing_admin = await this.admin_repo.get_one_admin({ email: payload.email }, ['password', 'id']);
 
         if( !existing_admin ) throw new NotFoundException('Admin not found');
@@ -22,9 +25,13 @@ export class AdminService {
 
         if( PASSWORD_IS_INVALID ) throw new UnauthorizedException('Password is Invalid');
 
+        const session_id = crypto.randomUUID();
+
+        await redis_client.setex(`ADMIN-SESSION-${session_id}`, 7200, existing_admin.id)
+
         const token = this.auth_utils.sign_token({ 
             id: existing_admin.id,
-            session_id: crypto.randomUUID()
+            session_id: session_id
         });
 
         return token;

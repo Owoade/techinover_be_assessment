@@ -37,13 +37,20 @@ export class ProductRepository {
 
     async get_products( filter: Partial<ProductModelInterface>, page: number, per_page: number ){
 
+        const count = await this.ProductModel.count({
+            where: filter
+        })
+
         const products = await this.ProductModel.findAll({
             where: filter,
             limit: per_page,
             offset: per_page * ( page - 1 )
         })
 
-        return products.map( product => product.toJSON() );
+        return {
+            count,
+            products: products.map( product => product.toJSON() )
+        };
 
     }
 
