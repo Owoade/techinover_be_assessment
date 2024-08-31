@@ -63,6 +63,8 @@ export class AdminAuthInterceptor implements NestInterceptor {
         await redis_client.set(`ADMIN-${payload.id}`, JSON.stringify(admin))
 
         response.locals.admin = admin;
+
+        response.locals.session = payload.session_id;
         
         return next.handle();
         

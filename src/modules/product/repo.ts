@@ -3,6 +3,7 @@ import { InferedSchemaType } from "@utils/schema";
 import { ProductModelInterface } from "./type";
 import { PRODUCT_MODEL_PROVIDER } from "./model";
 import { FilterUser } from "@modules/user/type";
+import { UserModel } from "@modules/user/model";
 
 @Injectable()
 export class ProductRepository {
@@ -45,6 +46,30 @@ export class ProductRepository {
             where: filter,
             limit: per_page,
             offset: per_page * ( page - 1 )
+        })
+
+        return {
+            count,
+            products: products.map( product => product.toJSON() )
+        };
+
+    }
+
+    async get_products_with_merchant_details( filter: Partial<ProductModelInterface>, page: number, per_page: number ){
+
+        const count = await this.ProductModel.count({
+            where: filter
+        })
+
+        const products = await this.ProductModel.findAll({
+            where: filter,
+            limit: per_page,
+            offset: per_page * ( page - 1 ),
+            include: {
+                model: UserModel,
+                attributes: ['name'],
+                as: "Merchant"
+            }
         })
 
         return {

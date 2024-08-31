@@ -36,4 +36,13 @@ export const Admin = createParamDecorator(function(data:unknown, ctx: ExecutionC
 
 })
 
+export const SessionId = createParamDecorator(function(data:unknown, ctx: ExecutionContext){
+
+  const response = ctx.switchToHttp().getResponse();
+
+  return response.locals.session_id;
+
+})
+
+
 

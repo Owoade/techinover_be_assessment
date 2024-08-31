@@ -34,7 +34,7 @@ export class UserService {
 
         const session_id = crypto.randomUUID();
 
-        await redis_client.setex(`USER-SESSTION-${session_id}`, 7200, new_user.id)
+        await redis_client.setex(`USER-SESSION-${session_id}`, 7200, new_user.id)
 
         delete new_user.password;
 
@@ -68,7 +68,7 @@ export class UserService {
 
         const session_id = crypto.randomUUID();
 
-        await redis_client.setex(`USER-SESSTION-${session_id}`, 7200, existing_user.id)
+        await redis_client.setex(`USER-SESSION-${session_id}`, 7200, existing_user.id)
 
         const token = this.auth_utils.sign_token({ id: existing_user.id, session_id });
 

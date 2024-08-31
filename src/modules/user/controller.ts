@@ -1,6 +1,6 @@
 import { Controller, Delete, Get, Patch, Post, UseInterceptors } from "@nestjs/common";
 import { UserService } from "./service";
-import { RequestPayload, User } from "@decorators/index";
+import { RequestPayload, SessionId, User } from "@decorators/index";
 import { sign_in_validator, user_sign_up_validator } from "@validators/user";
 import { UserAuthInterceptor } from "src/interceptors/user-auth";
 import { response } from "@utils/response";
@@ -10,6 +10,7 @@ import { UserModelInterface } from "./type";
 import { id_validator, pagination_validator } from "@validators/utils";
 import { ProductRepository } from "@modules/product/repo";
 import { ProductModelInterface } from "@modules/product/type";
+import { redis_client } from "@cache/index";
 
 @Controller('user')
 @UseInterceptors(UserAuthInterceptor)
@@ -179,6 +180,25 @@ export class UserController {
             message: "Product deletion initiated",
             statusCode: 200,
             data: {}
+        })
+
+    }
+
+    @Get('/logout')
+    async logout(
+
+        @SessionId()
+        session_id: string
+
+    ){
+
+        await redis_client.del(`USER-SESSION-${session_id}`);
+
+        return response({
+            status: true,
+            statusCode: 200,
+            data: {},
+            message: "You have successfully logged out"
         })
 
     }

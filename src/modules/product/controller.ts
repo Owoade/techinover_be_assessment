@@ -26,12 +26,13 @@ export class ProductController {
 
         payload.per_page = parseInt(payload.per_page as string);
 
-        const products = await this.product_repo.get_products({ is_approved: true }, payload.page, payload.per_page );
+        const {products, count} = await this.product_repo.get_products_with_merchant_details({ is_approved: true }, payload.page, payload.per_page );
 
         return response({
             status: true,
             statusCode: 200,
             data: {
+                count,
                 products
             }
         })

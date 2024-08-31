@@ -35,7 +35,7 @@ export class UserAuthInterceptor implements NestInterceptor {
 
         const [ type, token ] = auth_header.split(' ');
 
-        const payload = await this.auth_utils.verify_token( token ) as any;
+        const payload = this.auth_utils.verify_token( token ) as any;
 
         if( !payload ) throw new BadRequestException("Invalid token");
 
@@ -64,6 +64,8 @@ export class UserAuthInterceptor implements NestInterceptor {
         await redis_client.set(`USER-${payload.id}`, JSON.stringify(user))
 
         response.locals.user = user;
+
+        response.locals.session_id = payload.session_id;
         
         return next.handle();
         

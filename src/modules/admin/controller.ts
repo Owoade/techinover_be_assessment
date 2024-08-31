@@ -89,7 +89,7 @@ export class AdminController {
 
         payload.per_page = parseInt(payload.per_page as string);
 
-        const { count, products } = await this.product_repository.get_products( {}, payload.page, payload.per_page );
+        const { count, products } = await this.product_repository.get_products_with_merchant_details( {}, payload.page, payload.per_page );
 
         return response({
             status: true,
