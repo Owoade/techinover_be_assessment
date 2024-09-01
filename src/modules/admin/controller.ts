@@ -3,7 +3,7 @@ import { UserRepository } from "@modules/user/repo";
 import { UserService } from "@modules/user/service";
 import { Controller, Get, Patch, Post, Req, UseInterceptors } from "@nestjs/common";
 import { AdminService } from "./service";
-import { RequestPayload } from "@decorators/index";
+import { ApiQueryPage, ApiQueryPerPage, RequestPayload, SessionId } from "@decorators/index";
 import { sign_in_validator } from "@validators/user";
 import { AdminAuthInterceptor } from "src/interceptors/admin-auth";
 import { AdminModelInterface } from "./type";
@@ -11,6 +11,14 @@ import { response } from "@utils/response";
 import { id_validator, pagination_validator } from "@validators/utils";
 import { ProductRepository } from "@modules/product/repo";
 import { review_product_validator } from "@validators/admin";
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiResponse } from "@nestjs/swagger";
+import { sign_in_body_config } from "src/swagger/body/auth";
+import { logout_response_schema, sign_in_response_schema } from "src/swagger/response/auth";
+import { error_response_schema } from "src/swagger/error";
+import { get_users_response_schema, toggle_user_access_response_schema } from "src/swagger/response/user";
+import { get_products_for_admin_schema, review_product_response_schema } from "src/swagger/response/product";
+import { review_product_body_config } from "src/swagger/body/product";
+import { redis_client } from "@cache/index";
 
 @Controller('admin')
 @UseInterceptors(AdminAuthInterceptor)
@@ -25,6 +33,9 @@ export class AdminController {
     ){}
 
     @Post('/whitelist/auth/sign-in')
+    @ApiBody(sign_in_body_config)
+    @ApiResponse({ status: 200, schema: sign_in_response_schema })
+    @ApiResponse({ status: "4XX", schema: error_response_schema })
     async sign_in(
 
         @RequestPayload({
@@ -47,6 +58,11 @@ export class AdminController {
     }
 
     @Get('/users')
+    @ApiBearerAuth()
+    @ApiQueryPage()
+    @ApiQueryPerPage()
+    @ApiResponse({ status: 200, schema: get_users_response_schema })
+    @ApiResponse({ status: "4XX", schema: error_response_schema })
     async get_users(
 
         @RequestPayload({
@@ -75,6 +91,11 @@ export class AdminController {
     }
 
     @Get('/products')
+    @ApiBearerAuth()
+    @ApiQueryPage()
+    @ApiQueryPerPage()
+    @ApiResponse({ status: 200, schema: get_products_for_admin_schema })
+    @ApiResponse({ status: "4XX", schema: error_response_schema })
     async get_products(
 
         @RequestPayload({
@@ -102,7 +123,11 @@ export class AdminController {
 
     }
 
-    @Patch('/user')
+    @Patch('/user/access')
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'user_id', required: true, type: Number, description: "User's id" })
+    @ApiResponse({ status: 200, schema: toggle_user_access_response_schema })
+    @ApiResponse({ status: "4XX", schema: error_response_schema })
     async toggle_user_priviledge(
 
         @RequestPayload({
@@ -125,7 +150,11 @@ export class AdminController {
 
     }
 
-    @Patch('/product')
+    @Patch('/product/review')
+    @ApiBearerAuth()
+    @ApiBody(review_product_body_config)
+    @ApiResponse({ status: 200, schema: review_product_response_schema })
+    @ApiResponse({ status: "4XX", schema: error_response_schema })
     async review_product(
 
         @RequestPayload({
@@ -143,6 +172,28 @@ export class AdminController {
             data: {
                 updated_user
             }
+        })
+
+    }
+
+    @Get('/logout')
+    @ApiBearerAuth()
+    @ApiResponse({ status: 200, schema: logout_response_schema })
+    @ApiResponse({ status: "4XX", schema: error_response_schema })
+    async logout(
+
+        @SessionId()
+        session_id: string
+
+    ){
+
+        await redis_client.del(`ADMIN-SESSION-${session_id}`);
+
+        return response({
+            status: true,
+            statusCode: 200,
+            data: {},
+            message: "You have successfully logged out"
         })
 
     }

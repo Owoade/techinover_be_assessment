@@ -1,4 +1,5 @@
 import { BadRequestException, ExecutionContext, createParamDecorator } from '@nestjs/common';
+import { ApiQuery } from '@nestjs/swagger';
 import * as Joi from 'joi';
 
 export const RequestPayload = createParamDecorator(function (data: {
@@ -44,5 +45,6 @@ export const SessionId = createParamDecorator(function(data:unknown, ctx: Execut
 
 })
 
+export const ApiQueryPage = () => ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number for pagination' })
 
-
+export const ApiQueryPerPage = () => ApiQuery({ name: 'per_page', required: false, type: Number, description: 'Number of items per page' })

@@ -1,17 +1,19 @@
 import { Controller, Get, Injectable } from "@nestjs/common";
 import { ProductRepository } from "./repo";
-import { RequestPayload } from "@decorators/index";
+import { ApiQueryPage, ApiQueryPerPage, RequestPayload } from "@decorators/index";
 import { pagination_validator } from "@validators/utils";
 import { response } from "@utils/response";
 
-@Controller('product')
+@Controller('products')
 export class ProductController {
 
     constructor(
         private product_repo: ProductRepository
     ){}
 
-    @Get('/')
+    @Get('/public')
+    @ApiQueryPage()
+    @ApiQueryPerPage()
     async get_products(
 
         @RequestPayload({

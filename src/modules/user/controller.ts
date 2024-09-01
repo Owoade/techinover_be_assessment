@@ -1,6 +1,6 @@
 import { Controller, Delete, Get, Patch, Post, UseInterceptors } from "@nestjs/common";
 import { UserService } from "./service";
-import { RequestPayload, SessionId, User } from "@decorators/index";
+import { ApiQueryPage, ApiQueryPerPage, RequestPayload, SessionId, User } from "@decorators/index";
 import { sign_in_validator, user_sign_up_validator } from "@validators/user";
 import { UserAuthInterceptor } from "src/interceptors/user-auth";
 import { response } from "@utils/response";
@@ -11,6 +11,12 @@ import { id_validator, pagination_validator } from "@validators/utils";
 import { ProductRepository } from "@modules/product/repo";
 import { ProductModelInterface } from "@modules/product/type";
 import { redis_client } from "@cache/index";
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiResponse } from "@nestjs/swagger";
+import { sign_in_body_config, sign_up_body_config } from "src/swagger/body/auth";
+import { create_product_body_config, update_product_body_config } from "src/swagger/body/product";
+import { logout_response_schema, sign_in_response_schema, sign_up_response_schema } from "src/swagger/response/auth";
+import { error_response_schema } from "src/swagger/error";
+import { create_product_response_schema, delete_product_response_schema, get_merchant_products_schema, update_product_response_schema } from "src/swagger/response/product";
 
 @Controller('user')
 @UseInterceptors(UserAuthInterceptor)
@@ -23,6 +29,9 @@ export class UserController {
     ){}
 
     @Post('/whitelist/auth/sign-up')
+    @ApiBody(sign_up_body_config)
+    @ApiResponse({ status: 200, schema: sign_up_response_schema })
+    @ApiResponse({ status: "4XX", schema: error_response_schema })
     async sign_up(
 
         @RequestPayload({
@@ -46,6 +55,9 @@ export class UserController {
     }
 
     @Post('/whitelist/auth/sign-in')
+    @ApiBody(sign_in_body_config)
+    @ApiResponse({ status: 200, schema: sign_in_response_schema })
+    @ApiResponse({ status: "4XX", schema: error_response_schema })
     async sign_in(
 
         @RequestPayload({
@@ -68,6 +80,10 @@ export class UserController {
     }
 
     @Post('/product')
+    @ApiBearerAuth()
+    @ApiBody(create_product_body_config)
+    @ApiResponse({ status: 200, schema: create_product_response_schema })
+    @ApiResponse({ status: "4XX", schema: error_response_schema })
     async create_product(
 
         @RequestPayload({
@@ -95,6 +111,11 @@ export class UserController {
     }
 
     @Get('/products')
+    @ApiBearerAuth()
+    @ApiQueryPage()
+    @ApiQueryPerPage()
+    @ApiResponse({ status: 200, schema: get_merchant_products_schema })
+    @ApiResponse({ status: "4XX", schema: error_response_schema })
     async get_products(
 
         @RequestPayload({
@@ -128,6 +149,10 @@ export class UserController {
     }
 
     @Patch('/product')
+    @ApiBearerAuth()
+    @ApiBody(update_product_body_config)
+    @ApiResponse({ status: 200, schema: update_product_response_schema })
+    @ApiResponse({ status: "4XX", schema: error_response_schema })
     async update_product(
 
         @RequestPayload({
@@ -160,6 +185,10 @@ export class UserController {
     }
 
     @Delete('/product')
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'product_id', required: true, type: Number, description: "Product's id" })
+    @ApiResponse({ status: 200, schema: delete_product_response_schema })
+    @ApiResponse({ status: "4XX", schema: error_response_schema })
     async delete_product(
 
         @RequestPayload({
@@ -185,6 +214,9 @@ export class UserController {
     }
 
     @Get('/logout')
+    @ApiBearerAuth()
+    @ApiResponse({ status: 200, schema: logout_response_schema })
+    @ApiResponse({ status: "4XX", schema: error_response_schema })
     async logout(
 
         @SessionId()

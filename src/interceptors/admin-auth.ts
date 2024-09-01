@@ -64,7 +64,7 @@ export class AdminAuthInterceptor implements NestInterceptor {
 
         response.locals.admin = admin;
 
-        response.locals.session = payload.session_id;
+        response.locals.session_id = payload.session_id;
         
         return next.handle();
         
