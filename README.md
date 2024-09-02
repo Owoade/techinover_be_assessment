@@ -78,10 +78,10 @@ You can set up the project using one of the following methods:
    Run the following command to set up the environment variables:
 
    ```bash
-   cp .env.sample .env
+   cp .env.example .env
    ```
 
-   Alternatively, you can create a `.env` file and copy the content of `.env.sample` into the `.env` file.
+   Alternatively, you can create a `.env` file and copy the content of `.env.example` into the `.env` file.
 
    For manual setup, the following environment variables need to be set:
 
