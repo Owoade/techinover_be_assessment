@@ -19,11 +19,13 @@ The `src` folder is organized as follows:
 - **db/**: Contains the database configuration, schema, and migrations.
 - **decorators/**: Contains decorators for input validation, request context storage, and API documentation.
 - **environment/**: Contains environment variables.
+- **interceptors/**: Contains request interceptors for authorization.
 - **modules/**: Contains all required modules. Each module typically includes:
   - **model/**: Represents a table in the database.
-  - **repository/**: Logic for communicating with the database.
+  - **repository/**: Contains logic for communicating with the database.
   - **service/**: Contains business logic.
-  - **controller/**: Interfaces with HTTP requests.
+  - **controller/**: Contains logic that interfaces with HTTP requests.
+  - **type/**: Contains type definitions for all module components.
 - **validators/**: Contains validation schemas for request payloads.
 - **swagger/**: Contains schemas and configurations for API documentation.
 - **utils/**: Contains utility functions.

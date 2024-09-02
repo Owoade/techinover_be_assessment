@@ -27,7 +27,6 @@ async function bootstrap() {
     .setTitle('Techinover E-commerce')
     .setDescription('An e-commerce api')
     .setVersion('1.0')
-    .addTag('cats')
     .addBearerAuth()
     .build();
 
