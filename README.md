@@ -97,6 +97,12 @@ You can set up the project using one of the following methods:
 
    A sample `.env.example` file is provided in the repository to help you set up these variables. Populate the values accordingly.
 
+4. **Run build**
+
+   ```bash
+   npm run build
+   ```
+
 4. **Set Up the Database**
 
    Ensure that PostgreSQL is running and accessible. Run migrations to set up the database schema:
@@ -131,20 +137,6 @@ To run the application locally:
 3. **Access the API**
 
    - Once the application is running, you can access the API at `http://localhost:3000`.
-
-## Environment Variables
-
-For manual setup, the following environment variables need to be set:
-
-- **DATABASE_USER**: Your database username.
-- **DATABASE_PASSWORD**: Your database password.
-- **DATABASE_NAME**: The name of the database to use.
-- **DATABASE_PORT**: The port number for the database.
-- **DATABASE_HOST**: The host address for the database.
-- **JWT_TOKEN_PASSPHRASE**: The passphrase used to sign JWT tokens.
-- **REDIS_URL**: The URL for connecting to the Redis instance.
-- **DATABASE_SSL_MODE**: SSL mode for database connection (`on` or `off`).
-- **REDIS_SSL_MODE**: SSL mode for Redis connection (`on` or `off`).
 
 A sample `.env.example` file is provided in the repository to help you set up these variables. Populate the values accordingly.
 
