@@ -1,17 +1,14 @@
 import * as Joi from "joi";
 
 export const pagination_validator = Joi.object({
-    page: Joi.string().regex(/^[0-9]+$/).default('1'),
-    per_page: Joi.string().regex(/^[0-9]+$/).default('50')
+    page: Joi.number().min(1).max(9999999999).default('1'),
+    per_page: Joi.number().min(1).max(9999999999).default('50')
 })
 
 export const id_validator = ( id: string ) => Joi.object({
-    [id]: Joi.alternatives().try(Joi.number(), Joi.string().regex(/^[0-9]+$/)).required()
+    [id]: Joi.number().min(1).max(9999999999).integer()
 })
 
-export const otp_validator = Joi.object({
-    otp: Joi.string().regex(/^[0-9]+$/).required()
-}).required()
 
 export const id_validator_string = ( id: string ) => Joi.object({
     [id]: Joi.string().required()

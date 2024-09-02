@@ -11,7 +11,7 @@ import { id_validator, pagination_validator } from "@validators/utils";
 import { ProductRepository } from "@modules/product/repo";
 import { ProductModelInterface } from "@modules/product/type";
 import { redis_client } from "@cache/index";
-import { ApiBearerAuth, ApiBody, ApiQuery, ApiResponse } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
 import { sign_in_body_config, sign_up_body_config } from "src/swagger/body/auth";
 import { create_product_body_config, update_product_body_config } from "src/swagger/body/product";
 import { logout_response_schema, sign_in_response_schema, sign_up_response_schema } from "src/swagger/response/auth";
@@ -29,6 +29,10 @@ export class UserController {
     ){}
 
     @Post('/whitelist/auth/sign-up')
+    @ApiOperation({
+        summary: 'Create user',
+        description: 'This endpoint creates a user',
+    })
     @ApiBody(sign_up_body_config)
     @ApiResponse({ status: 200, schema: sign_up_response_schema })
     @ApiResponse({ status: "4XX", schema: error_response_schema })
@@ -55,6 +59,9 @@ export class UserController {
     }
 
     @Post('/whitelist/auth/sign-in')
+    @ApiOperation({
+        summary: 'User login',
+    })
     @ApiBody(sign_in_body_config)
     @ApiResponse({ status: 200, schema: sign_in_response_schema })
     @ApiResponse({ status: "4XX", schema: error_response_schema })
@@ -80,6 +87,10 @@ export class UserController {
     }
 
     @Post('/product')
+    @ApiOperation({
+        summary: 'Create product',
+        description: "This endpoint creates a user's product",
+    })
     @ApiBearerAuth()
     @ApiBody(create_product_body_config)
     @ApiResponse({ status: 200, schema: create_product_response_schema })
@@ -111,6 +122,10 @@ export class UserController {
     }
 
     @Get('/products')
+    @ApiOperation({
+        summary: "Get products",
+        description: "This endpoint gets a user's products",
+    })
     @ApiBearerAuth()
     @ApiQueryPage()
     @ApiQueryPerPage()
@@ -149,6 +164,10 @@ export class UserController {
     }
 
     @Patch('/product')
+    @ApiOperation({
+        summary: 'Update product',
+        description: "This endpoint updates a user's product",
+    })
     @ApiBearerAuth()
     @ApiBody(update_product_body_config)
     @ApiResponse({ status: 200, schema: update_product_response_schema })
@@ -185,6 +204,10 @@ export class UserController {
     }
 
     @Delete('/product')
+    @ApiOperation({
+        summary: 'Delete product',
+        description: "This endpoint deletes a user's product",
+    })
     @ApiBearerAuth()
     @ApiQuery({ name: 'product_id', required: true, type: Number, description: "Product's id" })
     @ApiResponse({ status: 200, schema: delete_product_response_schema })
@@ -214,6 +237,9 @@ export class UserController {
     }
 
     @Get('/logout')
+    @ApiOperation({
+        description: "This endpoint ends a user's session",
+    })
     @ApiBearerAuth()
     @ApiResponse({ status: 200, schema: logout_response_schema })
     @ApiResponse({ status: "4XX", schema: error_response_schema })

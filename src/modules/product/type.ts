@@ -6,6 +6,10 @@ export interface ProductModelInterface {
 
     price: string;
 
+    description: string;
+
+    quantity: number;
+
     slug: string;
 
     is_approved: boolean;

@@ -9,7 +9,7 @@ import {
 import { Observable } from 'rxjs';
 import { Request, Response } from 'express';
 import { redis_client } from '@cache/index';
-import { AuthenticationUtils } from '@modules/core/auth/urtls';
+import { AuthenticationUtils } from '@modules/core/auth/utils';
 import { UserRepository } from '@modules/user/repo';
 
 @Injectable()
@@ -55,7 +55,13 @@ export class UserAuthInterceptor implements NestInterceptor {
 
         if( cached_user ) user = JSON.parse( cached_user );
 
-        else user = await this.user_repo.get_one_user( { id: payload.id } );
+        else {
+
+            user = await this.user_repo.get_one_user( { id: payload.id } );
+
+            await redis_client.set(`USER-${payload.id}`, JSON.stringify(user))
+
+        }
 
         if(!user) throw new ForbiddenException("This operation is beyond the scope of your privilege");
 

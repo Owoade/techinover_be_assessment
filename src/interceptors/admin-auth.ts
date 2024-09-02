@@ -9,7 +9,7 @@ import {
 import { Observable } from 'rxjs';
 import { Request, Response } from 'express';
 import { redis_client } from '@cache/index';
-import { AuthenticationUtils } from '@modules/core/auth/urtls';
+import { AuthenticationUtils } from '@modules/core/auth/utils';
 import { UserRepository } from '@modules/user/repo';
 import { AdminRepository } from '@modules/admin/repo';
 
@@ -56,11 +56,15 @@ export class AdminAuthInterceptor implements NestInterceptor {
 
         if( cached_admin ) admin = JSON.parse( cached_admin );
 
-        else admin = await this.admin_repo.get_one_admin( { id: payload.id } );
+        else {
+
+            admin = await this.admin_repo.get_one_admin( { id: payload.id } );
+
+            await redis_client.set(`ADMIN-${payload.id}`, JSON.stringify(admin))
+            
+        };
 
         if(!admin) throw new ForbiddenException("This operation is beyond the scope of your privilege");
-
-        await redis_client.set(`ADMIN-${payload.id}`, JSON.stringify(admin))
 
         response.locals.admin = admin;
 

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { AdminModelInterface } from "./type";
 import { AdminRepository } from "./repo";
-import { AuthenticationUtils } from "@modules/core/auth/urtls";
+import { AuthenticationUtils } from "@modules/core/auth/utils";
 import * as crypto from "crypto";
 import { redis_client } from "@cache/index";
 

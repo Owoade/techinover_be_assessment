@@ -21,7 +21,7 @@ export class UserRepository {
 
     async get_one_user(filter: Partial<UserModelInterface>) : Promise<UserModelInterface>
     async get_one_user<T extends keyof UserModelInterface>(filter: Partial<UserModelInterface>, attributes: T[]): Promise<Pick<UserModelInterface, T>>
-    async get_one_user<T extends keyof UserModelInterface>( filter: Partial<UserModelInterface>, attributes?: (keyof UserModelInterface)[] ){
+    async get_one_user<T extends keyof UserModelInterface>( filter: Partial<UserModelInterface>, attributes?: T[] ){
 
         const user = await this.UserModel.findOne({
             where: filter,

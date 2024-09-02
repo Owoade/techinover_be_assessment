@@ -11,7 +11,7 @@ import { response } from "@utils/response";
 import { id_validator, pagination_validator } from "@validators/utils";
 import { ProductRepository } from "@modules/product/repo";
 import { review_product_validator } from "@validators/admin";
-import { ApiBearerAuth, ApiBody, ApiQuery, ApiResponse } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
 import { sign_in_body_config } from "src/swagger/body/auth";
 import { logout_response_schema, sign_in_response_schema } from "src/swagger/response/auth";
 import { error_response_schema } from "src/swagger/error";
@@ -33,6 +33,9 @@ export class AdminController {
     ){}
 
     @Post('/whitelist/auth/sign-in')
+    @ApiOperation({
+        summary: 'Admin login'
+    })
     @ApiBody(sign_in_body_config)
     @ApiResponse({ status: 200, schema: sign_in_response_schema })
     @ApiResponse({ status: "4XX", schema: error_response_schema })
@@ -58,6 +61,10 @@ export class AdminController {
     }
 
     @Get('/users')
+    @ApiOperation({
+        summary: 'Get users',
+        description: "This paginated endpoint retrieves all users"
+    })
     @ApiBearerAuth()
     @ApiQueryPage()
     @ApiQueryPerPage()
@@ -91,6 +98,10 @@ export class AdminController {
     }
 
     @Get('/products')
+    @ApiOperation({
+        summary: 'Get products',
+        description: "This paginated endpoint retrieves all products"
+    })
     @ApiBearerAuth()
     @ApiQueryPage()
     @ApiQueryPerPage()
@@ -124,6 +135,10 @@ export class AdminController {
     }
 
     @Patch('/user/access')
+    @ApiOperation({
+        summary: "Toggle user access",
+        description: "This endpoint toggles a user's access to the platform"
+    })
     @ApiBearerAuth()
     @ApiQuery({ name: 'user_id', required: true, type: Number, description: "User's id" })
     @ApiResponse({ status: 200, schema: toggle_user_access_response_schema })
@@ -151,6 +166,10 @@ export class AdminController {
     }
 
     @Patch('/product/review')
+    @ApiOperation({
+        summary: 'Review product',
+        description: "This endpoint approves/disaproves a product"
+    })
     @ApiBearerAuth()
     @ApiBody(review_product_body_config)
     @ApiResponse({ status: 200, schema: review_product_response_schema })
@@ -164,13 +183,13 @@ export class AdminController {
 
     ){
 
-        const updated_user = await this.product_service.review_product( payload.product_id, payload.review );
+        const updated_product = await this.product_service.review_product( payload.product_id, payload.review );
 
         return response({
             status: true,
             statusCode: 200,
             data: {
-                updated_user
+                updated_product
             }
         })
 
@@ -178,6 +197,9 @@ export class AdminController {
 
     @Get('/logout')
     @ApiBearerAuth()
+    @ApiOperation({
+        description: "This endpoint ends an admin's session",
+    })
     @ApiResponse({ status: 200, schema: logout_response_schema })
     @ApiResponse({ status: "4XX", schema: error_response_schema })
     async logout(

@@ -3,6 +3,7 @@ import { ProductRepository } from "./repo";
 import { ApiQueryPage, ApiQueryPerPage, RequestPayload } from "@decorators/index";
 import { pagination_validator } from "@validators/utils";
 import { response } from "@utils/response";
+import { ApiOperation } from "@nestjs/swagger";
 
 @Controller('products')
 export class ProductController {
@@ -12,6 +13,10 @@ export class ProductController {
     ){}
 
     @Get('/public')
+    @ApiOperation({
+        summary: 'Get products',
+        description: 'This unauthenticated and paginated endpoint retrieves all approved products',
+    })
     @ApiQueryPage()
     @ApiQueryPerPage()
     async get_products(

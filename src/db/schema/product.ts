@@ -8,6 +8,10 @@ export const ProductSchema = {
 
     price: schema_type.decimal(10,2),
 
+    description: schema_type.string(),
+
+    quantity: schema_type.int(),
+
     slug: schema_type.string(),
 
     is_approved: schema_type.boolean(),

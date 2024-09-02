@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { AuthenticationUtils } from "./urtls";
+import { AuthenticationUtils } from "./utils";
 
 @Module({
     exports: [AuthenticationUtils],

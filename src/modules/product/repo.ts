@@ -23,7 +23,7 @@ export class ProductRepository {
 
     async get_one_product(filter: Partial<ProductModelInterface>) : Promise<ProductModelInterface>
     async get_one_product<T extends keyof ProductModelInterface>(filter: Partial<ProductModelInterface>, attributes: T[]): Promise<Pick<ProductModelInterface, T>>
-    async get_one_product<T extends keyof ProductModelInterface>( filter: Partial<ProductModelInterface>, attributes?: (keyof ProductModelInterface)[] ){
+    async get_one_product<T extends keyof ProductModelInterface>( filter: Partial<ProductModelInterface>, attributes?: T[] ){
 
         const product = await this.ProductModel.findOne({
             where: filter,

@@ -5,9 +5,11 @@ export const create_product_body_config: ApiBodyOptions = {
         type: 'object',
         properties: {
           name: { type: 'string', example: "Indomie" },
-          price: { type: 'number', example: 200 }
+          price: { type: 'number', example: 200 },
+          description: { type: 'string', example: "Fast food for all" },
+          quantity: { type: 'number', example: 10 }
         },
-        required: ['name', 'price'],
+        required: ['name', 'price', 'description', 'quantity'],
     }
 }
 
@@ -17,9 +19,11 @@ export const update_product_body_config: ApiBodyOptions = {
         properties: {
           id: { type: 'number', example: 1 },
           name: { type: 'string', example: "Indomie" },
-          price: { type: 'number', example: 200 }
+          price: { type: 'number', example: 200 },
+          description: { type: 'string', example: "Fast food for all" },
+          quantity: { type: 'number', example: 10 }
         },
-        required: ['name', 'price', 'id'],
+        required: ['name', 'price', 'id', 'description', 'quantity'],
     }
 }
 export const review_product_body_config: ApiBodyOptions = {
@@ -29,6 +33,6 @@ export const review_product_body_config: ApiBodyOptions = {
           product_id: { type: 'number', example: 1 },
           review: { type: 'boolean', example: true },
         },
-        required: ['name', 'price', 'product_id'],
+        required: ['review', 'product_id'],
     }
 }
