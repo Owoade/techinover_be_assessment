@@ -34,4 +34,4 @@ COPY --from=builder /app/src/db/migrations ./src/db/migrations
 EXPOSE 3000
 
 # Start the application
-CMD npm run start:docker
+CMD npm run migrate && node dist/main

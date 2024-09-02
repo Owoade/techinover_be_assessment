@@ -18,4 +18,3 @@ export const AdminSchema = {
 
 export const ADMIN_TABLE_NAME = "Admins";
 
-

@@ -124,7 +124,7 @@ export class UserController {
     @Get('/products')
     @ApiOperation({
         summary: "Get products",
-        description: "This endpoint gets a user's products",
+        description: "This paginated endpoint gets a user's products",
     })
     @ApiBearerAuth()
     @ApiQueryPage()
